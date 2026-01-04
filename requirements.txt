@@ -1,0 +1,5 @@
+yt-dlp
+aiohttp
+numpy
+opencv-python
+pytesseract
