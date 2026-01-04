@@ -1,5 +1,10 @@
 from typing import List, Dict
+import logging
 import numpy as np
+import cv2
+import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 class RuleBasedEventDetector:
     "Detects important events using heuristic rules"
@@ -33,6 +38,8 @@ class RuleBasedEventDetector:
             'ability_cast': ([500, 1500], 0.6),
             'elimination_sound': ([800, 2400], 0.9)
         }
+        # OCR availability flag — will be set to False if the tesseract binary is not found
+        self._ocr_available = True
 
     def analyze_clip_segment(self, frames: np.ndarray, audio: np.ndarray, hud_data: List[Dict], start_time: float) -> Dict:
         "analize clip segmant and detect events"
@@ -306,9 +313,23 @@ class RuleBasedEventDetector:
         "Use OCR to detect on-screen text indicating key events (e.g., ACE, CLUTCH)"
         ace_text_detected = False
         clutch_text_detected = False
+        # If OCR has previously been found to be unavailable, skip heavy OCR work
+        if not getattr(self, '_ocr_available', True):
+            logging.debug("OCR disabled: skipping analyze_screen_text")
+            return {'ace_text': False, 'clutch_text': False}
         for frame in frames:
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            text = pytesseract.image_to_string(gray)
+            try:
+                text = pytesseract.image_to_string(gray)
+            except pytesseract.pytesseract.TesseractNotFoundError:
+                # Disable OCR for future calls and warn once
+                logging.warning("Tesseract binary not found. OCR will be disabled — install Tesseract and add to PATH to enable OCR.")
+                self._ocr_available = False
+                return {'ace_text': False, 'clutch_text': False}
+            except Exception as e:
+                logging.debug(f"OCR failed for one frame: {e}")
+                continue
+
             if 'ACE' in text.upper():
                 ace_text_detected = True
             if 'CLUTCH' in text.upper():

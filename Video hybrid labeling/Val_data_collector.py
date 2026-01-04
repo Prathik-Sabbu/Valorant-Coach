@@ -7,7 +7,7 @@ class AutomatedValorantDataCollector:
     Lightweight pipeline: just manages config, database,
     and stores clips/metadata into SQLite.
     """
-    def __init__(self, config_path: str = 'config.json'):
+    def __init__(self, config_path: str = r'C:\Users\sabbu\OneDrive\Documents\Git\Valorant-Coach\Video hybrid labeling\config.json'):
         self.config = self.load_config(config_path)
         self.setup_database()
 

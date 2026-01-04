@@ -1,0 +1,30 @@
+{
+  "storage": {
+    "raw_clips_dir": "raw_clips",
+    "processed_data_dir": "processed_data",
+    "database_path": "valorant_data.db"
+  },
+  "processing": {
+    "min_importance_threshold": 0.5,
+    "example_vod_url": "https://www.youtube.com/watch?v=_BZZBYsKceQ",
+    "sample_rate": 30,
+    "segment_duration": 5.0,
+    "segment_overlap": 0.0
+  },
+  "data_sources": {
+    "youtube_channels": [
+      "Valorant",
+      "TenZ",
+      "Tarik"
+    ],
+    "twitch_channels": [
+      "TenZ",
+      "Tarik",
+      "ShahZaM"
+    ],
+    "twitch": {
+      "client_id": "",
+      "oauth_token": ""
+    }
+  }
+}
